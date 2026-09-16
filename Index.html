@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matriks Buku Saku Perda - Satpol PP Gianyar</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #1a365d;
+      --secondary-color: #2b6cb0;
+      --accent-color: #d69e2e;
+      --bg-color: #f7fafc;
+    }
+    body { background-color: var(--bg-color); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; color: #2d3748; }
+    
+    .header-app { 
+      background: linear-gradient(135deg, #0f172a 0%, #1e3c72 50%, #2a5298 100%); 
+      color: white; 
+      padding: 30px 20px 25px 20px; 
+      border-bottom-left-radius: 30px; 
+      border-bottom-right-radius: 30px; 
+      box-shadow: 0 10px 25px -5px rgba(30, 60, 114, 0.3); 
+    }
+    
+    .filter-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 8px 12px;
+      margin-top: 15px;
+    }
+
+    .matrix-container { 
+      background: white; 
+      border-radius: 20px; 
+      box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); 
+      padding: 20px; 
+      margin-bottom: 30px; 
+      border: 1px solid #edf2f7;
+    }
+    
+    .table-responsive { 
+      max-height: 65vh; 
+      overflow-y: auto; 
+      overflow-x: scroll; 
+      -webkit-overflow-scrolling: touch; 
+      border-radius: 12px;
+    }
+    
+    .table thead th { 
+      background-color: #1e3c72; 
+      color: white; 
+      position: sticky; 
+      top: 0; 
+      z-index: 2; 
+      border: none; 
+      font-size: 0.8rem; 
+      text-transform: uppercase; 
+      letter-spacing: 0.8px; 
+      padding: 16px 14px; 
+      text-align: center; 
+    }
+    
+    .table tbody td { 
+      font-size: 0.88rem; 
+      vertical-align: middle; 
+      padding: 20px 14px; 
+      border-bottom: 1px solid #f1f5f9; 
+      line-height: 1.6;
+    }
+    
+    .table-hover tbody tr:hover { background-color: #f8fafc; }
+
+    .col-nothn { width: 100px; text-align: center; }
+    .col-kategori { width: 190px; }
+    .col-nama { width: 220px; font-weight: 600; color: #1e3c72; }
+    .col-tentang { min-width: 280px; text-align: left; }
+    .col-sanksi { min-width: 260px; text-align: left; color: #2d3748; }
+    .col-aksi { width: 85px; text-align: center; }
+
+    .badge-jenis { 
+      background-color: #eff6ff; 
+      color: #1d4ed8; 
+      border: 1px solid #dbeafe; 
+      border-radius: 12px; 
+      padding: 8px 12px; 
+      font-size: 0.75rem; 
+      font-weight: 600; 
+      display: inline-block; 
+      line-height: 1.4; 
+      text-align: center;
+    }
+    
+    .btn-pdf {
+      background-color: #fff1f2;
+      color: #e11d48;
+      border: 1px solid #ffe4e6;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .btn-pdf:hover {
+      background-color: #e11d48;
+      color: white;
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+    }
+    
+    .btn-floating { 
+      position: fixed; 
+      bottom: 30px; 
+      right: 25px; 
+      width: 65px; 
+      height: 65px; 
+      border-radius: 50%; 
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
+      color: white; 
+      box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4); 
+      z-index: 1050; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      text-decoration: none; 
+      cursor: pointer; 
+      border: none; 
+    }
+
+    .custom-modal-backdrop {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6); z-index: 1080;
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 15px;
+    }
+    .custom-modal-content {
+      background: white; width: 100%; max-width: 900px; height: 85vh;
+      border-radius: 20px; display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body x-data="dashboardApp()">
+
+  <div class="container-fluid p-0 pb-5">
+    
+    <!-- HEADER -->
+    <div class="header-app mb-4">
+      <div class="container px-2">
+        <div class="row align-items-center mb-3">
+          <div class="col-md-7 text-center text-md-start mb-2 mb-md-0">
+            <span class="badge bg-warning text-dark mb-2 px-3 py-1 rounded-pill fw-bold" style="font-size: 0.75rem;">
+              <i class="fa-solid fa-shield-halved me-1"></i> RESMI PEMKAB GIANYAR
+            </span>
+            <h3 class="fw-bold mb-1">Matriks Buku Saku Perda</h3>
+            <p class="mb-0 text-white-50" style="font-size: 0.9rem;">Satuan Polisi Pamong Praja Kabupaten Gianyar</p>
+          </div>
+          
+          <div class="col-md-5 text-center text-md-end d-flex flex-column align-items-md-end align-items-center gap-2">
+            <span class="badge bg-light text-dark px-3 py-2 rounded-pill fw-bold shadow-sm">
+              Total Perda: <span x-text="perdaList.length"></span>
+            </span>
+            
+            <select x-model="selectedJenis" class="form-select form-select-sm shadow-none border-0 text-dark fw-medium" style="max-width: 280px; font-size: 0.82rem; border-radius: 10px; background-color: rgba(255, 255, 255, 0.95);">
+              <option value="">Semua Kategori Perda</option>
+              <template x-for="jenis in jenisList" :key="jenis">
+                <option :value="jenis" x-text="jenis"></option>
+              </template>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-card">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-0 text-muted ps-3"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input type="text" x-model="searchQuery" class="form-control border-0 shadow-none" placeholder="Cari nomor, tahun, nama perda, tentang, atau sanksi..." style="font-size: 0.9rem;">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- KONTEN UTAMA / TABEL -->
+    <div class="container-fluid px-4">
+      
+      <template x-if="perdaList.length === 0">
+        <div class="text-center py-5 text-muted">
+          <div class="mb-3"><i class="fa-solid fa-folder-open display-4 opacity-25"></i></div>
+          <h5 class="fw-bold text-dark">Belum Ada Data Perda</h5>
+          <p class="small">Silakan tambahkan data melalui tombol tambah (+) di pojok kanan bawah.</p>
+        </div>
+      </template>
+
+      <template x-if="perdaList.length > 0 && filteredData.length === 0">
+        <div class="text-center py-5 text-muted">
+          <div class="mb-3"><i class="fa-solid fa-search display-4 opacity-25"></i></div>
+          <h5 class="fw-bold text-dark">Perda Tidak Ditemukan</h5>
+          <p class="small">Tidak ada data yang sesuai dengan filter kategori atau kata kunci pencarian Anda.</p>
+        </div>
+      </template>
+
+      <template x-if="filteredData.length > 0">
+        <div class="matrix-container">
+          <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+            <span class="text-muted small fw-medium">
+              <i class="fa-solid fa-list-check text-primary me-1"></i> Menampilkan <strong class="text-dark" x-text="filteredData.length"></strong> dari <strong class="text-dark" x-text="perdaList.length"></strong> peraturan
+            </span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th class="col-nothn">No / Thn</th>
+                  <th class="col-kategori">Kategori Perda</th>
+                  <th class="col-nama">Nama Perda</th>
+                  <th class="col-tentang">Objek / Substansi Perda</th>
+                  <th class="col-sanksi">Sanksi / Tindakan</th>
+                  <th class="col-aksi">Dokumen</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="item in filteredData" :key="item.ID || Math.random()">
+                  <tr>
+                    <td class="col-nothn fw-bold text-primary text-center">
+                      <span class="d-block" x-text="'No. ' + (item.Nomor_Perda || '-')"></span>
+                      <span class="badge bg-light text-dark border px-2 py-1 mt-1 shadow-sm" style="font-size: 0.72rem;" x-text="item.Tahun"></span>
+                    </td>
+                    
+                    <td class="col-kategori text-center">
+                      <span class="badge-jenis" x-text="item.Jenis_Perda"></span>
+                    </td>
+
+                    <td class="col-nama" x-text="item.Nama_Perda || '-'"></td>
+                    
+                    <td class="col-tentang text-dark" x-text="item.Tentang"></td>
+
+                    <td class="col-sanksi" x-text="item.Sanksi_Tindakan || 'Sesuai ketentuan berlaku'"></td>
+                    
+                    <td class="col-aksi text-center">
+                      <template x-if="item.Link_Dokumen">
+                        <button type="button" @click="openPdf(item.Link_Dokumen, 'Perda No. ' + item.Nomor_Perda + ' Tahun ' + item.Tahun)" class="btn-pdf shadow-sm" title="Lihat Dokumen PDF">
+                          <i class="fa-solid fa-file-pdf"></i>
+                        </button>
+                      </template>
+                      <template x-if="!item.Link_Dokumen">
+                        <span class="text-muted small">-</span>
+                      </template>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </template>
+      
+    </div>
+    
+    <a href="<?= ScriptApp.getService().getUrl() + '?p=admin' ?>" class="btn-floating" title="Tambah Data Perda" target="_top">
+      <i class="fa-solid fa-plus fs-5"></i>
+    </a>
+
+    <div x-show="isModalOpen" class="custom-modal-backdrop" style="display: none;" x-transition.opacity>
+      <div class="custom-modal-content" @click.outside="isModalOpen = false">
+        <div class="px-4 py-3 bg-dark text-white d-flex justify-content-between align-items-center">
+          <h6 class="mb-0 fw-bold text-truncate" style="max-width: 80%;">
+            <i class="fa-solid fa-file-pdf text-danger me-2"></i> <span x-text="modalTitle">Dokumen Perda</span>
+          </h6>
+          <button type="button" @click="isModalOpen = false" class="btn btn-sm btn-light rounded-circle fw-bold">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="flex-grow-1 bg-light p-0 position-relative">
+          <iframe :src="activePdfUrl" width="100%" height="100%" style="border: none;" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const serverPerdaData = JSON.parse('<?= perdaListJson ?>');
+
+    function dashboardApp() {
+      return {
+        perdaList: serverPerdaData || [],
+        selectedJenis: '',
+        searchQuery: '',
+        isModalOpen: false,
+        activePdfUrl: '',
+        modalTitle: '',
+
+        jenisList: [
+          "Ketertiban Umum dan Ketenteraman Masyarakat",
+          "Pedagang Kaki Lima (PKL) dan Fasilitas Umum",
+          "Bangunan dan Perizinan",
+          "Kebersihan dan Ketertiban",
+          "Usaha dan Kegiatan Masyarakat",
+          "Gelandangan, Pengemis, dan Gangguan Sosial",
+          "Peraturan Bupati (Perbup) / Kepala Daerah"
+        ],
+
+        get filteredData() {
+          let data = this.perdaList;
+
+          if (this.selectedJenis !== '') {
+            data = data.filter(item => item.Jenis_Perda === this.selectedJenis);
+          }
+
+          if (this.searchQuery.trim() !== '') {
+            const query = this.searchQuery.toLowerCase();
+            data = data.filter(item => 
+              (item.Nomor_Perda && item.Nomor_Perda.toLowerCase().includes(query)) ||
+              (item.Tahun && item.Tahun.toLowerCase().includes(query)) ||
+              (item.Nama_Perda && item.Nama_Perda.toLowerCase().includes(query)) ||
+              (item.Tentang && item.Tentang.toLowerCase().includes(query)) ||
+              (item.Sanksi_Tindakan && item.Sanksi_Tindakan.toLowerCase().includes(query))
+            );
+          }
+
+          return data;
+        },
+
+        openPdf(url, title) {
+          this.activePdfUrl = url;
+          this.modalTitle = title;
+          this.isModalOpen = true;
+        }
+      }
+    }
+  </script>
+</body>
+</html>
